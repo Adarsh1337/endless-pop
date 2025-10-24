@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Endless Pop – Virtual Bubble Wrap ASMR</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+    }
+    h1 {
+      margin: 30px 0 10px 0;
+      font-size: 2.2rem;
+      font-weight: 700;
+      color: #364f6b;
+      letter-spacing: 2px;
+      text-shadow: 0 2px 6px #a7bbc7;
+    }
+    #bubble-wrap {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(38px, 1fr));
+      gap: 12px;
+      width: 90vw;
+      max-width: 800px;
+      height: 70vh;
+      background: rgba(255,255,255,0.55);
+      border-radius: 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.09);
+      align-items: center;
+      justify-items: center;
+      padding: 30px 5px;
+      overflow-y: auto;
+    }
+    .bubble {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse at top left, #e2f1ff 70%, #a7bbc7 100%);
+      box-shadow: 0 4px 12px rgba(110,173,204,0.15), inset 0 -2px 12px rgba(125,255,255,0.19);
+      border: 2px solid #b0bec5;
+      cursor: pointer;
+      transition: background 0.12s, box-shadow 0.23s, transform 0.08s;
+      outline: none;
+    }
+    .bubble:active {
+      transform: scale(0.97);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.13);
+    }
+    .popped {
+      background: #f7e9e3;
+      box-shadow: none;
+      border: 2px solid #ececec;
+      opacity: 0.8;
+      cursor: default;
+      transform: scale(0.92);
+    }
+    @media (max-width: 600px) {
+      #bubble-wrap { max-width: 96vw; }
+      .bubble { width: 28px; height: 28px; }
+    }
+    .counter-bar {
+      width: 830px;
+      max-width: 92vw;
+      margin: 15px auto 10px auto;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #3a538d;
+      font-weight: 600;
+      background: #e6ecf4;
+      border-radius: 20px;
+      padding: 10px 0;
+      box-shadow: 0 2px 7px rgba(110,173,204,0.11);
+    }
+    .reset-btn {
+      background: #b3e1fa;
+      color: #24496a;
+      border: none;
+      font-size: 1.1rem;
+      font-family: inherit;
+      border-radius: 15px;
+      margin-left: 15px;
+      padding: 0 18px;
+      height: 38px;
+      cursor: pointer;
+      box-shadow: 0 2px 6px #aacbe5;
+      transition: background .17s;
+    }
+    .reset-btn:hover, .reset-btn:focus {
+      background: #98d5ee;
+      box-shadow: 0 3px 9px #aacbe5;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Endless Pop – Virtual Bubble Wrap ASMR</h1>
+  <div class="counter-bar">
+    <span id="popped-counter">0</span> bubbles popped
+    <button class="reset-btn" onclick="resetBubbles()">Reset</button>
+  </div>
+  <div id="bubble-wrap"></div>
+
+  <audio id="pop-audio">
+    <source src="https://freesound.org/data/previews/331/331912_3248244-lq.mp3" type="audio/mp3">
+  </audio>
+
+  <script>
+    const bubblesPerRow = 22;
+    const rows = 16;
+    const totalBubbles = bubblesPerRow * rows;
+    let poppedCount = 0;
+
+    const bubbleWrap = document.getElementById('bubble-wrap');
+    const poppedCounter = document.getElementById('popped-counter');
+    const popAudio = document.getElementById('pop-audio');
+
+    function playPopSound() {
+      popAudio.currentTime = 0;
+      popAudio.play();
+    }
+
+    function createBubble(index) {
+      const bubble = document.createElement('div');
+      bubble.className = 'bubble';
+      bubble.tabIndex = 0;
+      bubble.setAttribute('data-index', index);
+      bubble.setAttribute('aria-label', 'Unpopped bubble');
+      bubble.addEventListener('click', function popBubble() {
+        if (!bubble.classList.contains('popped')) {
+          bubble.classList.add('popped');
+          bubble.setAttribute('aria-label', 'Popped bubble');
+          playPopSound();
+          poppedCount++;
+          poppedCounter.textContent = poppedCount;
+        }
+      });
+      bubble.addEventListener('keydown', function(e) {
+        if ((e.key === ' ' || e.key === 'Enter') && !bubble.classList.contains('popped')) {
+          bubble.click();
+        }
+      });
+      return bubble;
+    }
+
+    function buildBubbles() {
+      bubbleWrap.innerHTML = "";
+      poppedCount = 0;
+      poppedCounter.textContent = "0";
+      for (let i = 0; i < totalBubbles; i++) {
+        bubbleWrap.appendChild(createBubble(i));
+      }
+    }
+
+    function resetBubbles() {
+      buildBubbles();
+    }
+
+    buildBubbles();
+  </script>
+</body>
+</html>
